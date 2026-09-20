@@ -57,3 +57,47 @@ def get_dashboard_statistics():
         "total_alerts": total_alerts,
         "average_speed": round(average_speed, 2)
     }
+
+def get_speed_history(limit=30):
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT speed
+        FROM vehicle_data
+        ORDER BY id DESC
+        LIMIT ?
+    """, (limit,))
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    speeds = [row[0] for row in rows]
+
+    speeds.reverse()
+
+    return speeds
+
+def get_recent_vehicle_data(limit=10):
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            vehicle_id,
+            driver_id,
+            trip_id,
+            speed
+        FROM vehicle_data
+        ORDER BY id DESC
+        LIMIT ?
+    """, (limit,))
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
